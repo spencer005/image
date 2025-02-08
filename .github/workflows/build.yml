@@ -105,8 +105,16 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           oci: false
-          extra-args: |
+          build-args: |
             VOLUMES=/var/cache/dnf:/var/cache/dnf:rw
+
+      - name: Save DNF cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /var/cache/dnf
+          key: ${{ runner.os }}-dnf-${{ hashFiles('build.sh') }}
 
       # Rechunk is a script that we use on Universal Blue to make sure there isnt a single huge layer when your image gets published.
       # This does not make your image faster to download, just provides better resumability and fixes a few errors.
