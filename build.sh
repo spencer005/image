@@ -37,7 +37,7 @@ remove=(
     "vim-minimal"
 )
 
-dnf5 remove "${removes[@]}"
+dnf5 remove "${remove[@]}"
 
 # remove kernel packages
 kernel=(
