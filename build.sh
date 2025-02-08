@@ -29,6 +29,8 @@ dnf5 install --allowerasing "${install[@]}"
 
 dnf5 swap wpa_supplicant iwd
 
+rm /etc/dnf/protected.d/sudo.conf
+
 remove=(
     "toolbox"
     "firefox"
