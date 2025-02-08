@@ -9,7 +9,7 @@ dnf5 copr enable bieszczaders/kernel-cachyos-lto
 dnf5 copr enable bieszczaders/kernel-cachyos-addons
 dnf5 copr enable solopasha/plasma-unstable
 
-packages=(
+install=(
     "@kde-desktop"
     "zsh"
     "foot"
@@ -18,8 +18,6 @@ packages=(
     "helix"
     "ripgrep"
     "fd-find"
-    "strace"
-    "setools-console"
     "libcap-ng-devel"
     "procps-ng-devel"
     "cachyos-ksm-settings"
@@ -27,14 +25,22 @@ packages=(
     "cachyos-settings"
 )
 
-dnf5 install --allowerasing "${packages[@]}"
+dnf5 install --allowerasing "${install[@]}"
 
 dnf5 swap wpa_supplicant iwd
 
-dnf5 remove toolbox firefox
+remove=(
+    "toolbox"
+    "firefox"
+    "sudo"
+    "vlc-libs"
+    "vim-minimal"
+)
+
+dnf5 remove "${removes[@]}"
 
 # remove kernel packages
-kernel_pkgs=(
+kernel=(
     "kernel"
     "kernel-core"
     "kernel-modules"
@@ -44,7 +50,7 @@ kernel_pkgs=(
     "kernel-tools-libs"
 )
 
-rpm --erase --nodeps -- "${kernel_pkgs[@]}"
+rpm --erase --nodeps -- "${kernel[@]}"
 
 # use dnf to make use of replace-kernel from rpm-ostree
 dnf install kernel-cachyos-lto kernel-cachyos-lto-devel-matched

@@ -86,6 +86,15 @@ jobs:
           sep-tags: " "
           sep-annotations: " "
 
+      - name: Restore DNF cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/dnf
+          key: ${{ runner.os }}-dnf-${{ hashFiles('build.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-dnf-
+
       - name: Build Image
         id: build_image
         uses: redhat-actions/buildah-build@v2
@@ -96,6 +105,8 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           oci: false
+          extra-args: |
+            VOLUMES=/var/cache/dnf:/var/cache/dnf:rw
 
       # Rechunk is a script that we use on Universal Blue to make sure there isnt a single huge layer when your image gets published.
       # This does not make your image faster to download, just provides better resumability and fixes a few errors.
