@@ -21,7 +21,7 @@ fi
 
 echo "::endgroup::"
 
-dnf5 copr enable ublue/os-akmods
+dnf5 copr enable ublue-os/akmods
 dnf5 copr enable bieszczaders/kernel-cachyos
 dnf5 copr enable bieszczaders/kernel-cachyos-lto
 dnf5 copr enable bieszczaders/kernel-cachyos-addons
@@ -75,7 +75,7 @@ rpm --erase --nodeps -- "${kernel[@]}"
 
 dnf5 install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
 
-dnf5 copr disable ublue/os-akmods
+dnf5 copr disable ublue-os/akmods
 dnf5 copr disable bieszczaders/kernel-cachyos
 dnf5 copr disable bieszczaders/kernel-cachyos-addons
 dnf5 copr disable bieszczaders/kernel-cachyos-lto
