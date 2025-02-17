@@ -25,10 +25,6 @@ install=(
     "cachyos-settings"
 )
 
-dnf5 install --allowerasing "${install[@]}"
-
-dnf5 swap wpa_supplicant iwd
-
 rm /etc/dnf/protected.d/sudo.conf
 
 remove=(
@@ -40,9 +36,6 @@ remove=(
     "clang"
 )
 
-dnf5 remove "${remove[@]}"
-
-# remove kernel packages
 kernel=(
     "kernel"
     "kernel-core"
@@ -52,6 +45,12 @@ kernel=(
     "kernel-tools"
     "kernel-tools-libs"
 )
+
+dnf5 install --allowerasing $(printf -- '--exclude=%s ' "${remove[@]}") "${install[@]}"
+
+dnf5 swap wpa_supplicant iwd
+
+dnf5 remove "${remove[@]}"
 
 rpm --erase --nodeps -- "${kernel[@]}"
 
