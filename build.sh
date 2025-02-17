@@ -3,8 +3,6 @@ set -ouex pipefail
 
 dnf5() { command dnf5 -y "$@"; }
 
-echo "::endgroup::"
-
 dnf5 copr enable ublue-os/akmods
 dnf5 copr enable bieszczaders/kernel-cachyos
 dnf5 copr enable bieszczaders/kernel-cachyos-lto
