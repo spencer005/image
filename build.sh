@@ -31,6 +31,7 @@ remove=(
     "toolbox"
     "firefox"
     "sudo"
+    "phonon-qt6-backend-vlc"
     "vlc-libs"
     "vim-minimal"
     "clang"
