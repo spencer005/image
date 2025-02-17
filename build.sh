@@ -28,14 +28,7 @@ install=(
 rm /etc/dnf/protected.d/sudo.conf
 
 remove=(
-    "toolbox"
     "firefox"
-    "sudo"
-    "vlc-plugin-gstreamer"
-    "phonon-qt6-backend-vlc"
-    "vlc-libs"
-    "vim-minimal"
-    "clang"
 )
 
 kernel=(
