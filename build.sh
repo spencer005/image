@@ -47,11 +47,11 @@ dnf5 swap wpa_supplicant iwd
 
 dnf5 remove "${remove[@]}"
 
-rpm --erase --nodeps -- "${kernel[@]}"
+#rpm --erase --nodeps -- "${kernel[@]}"
 
-dnf install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
+#dnf install kernel-cachyos-lto kernel-cachyos-lto-devel-matched
 
-dnf5 copr disable ublue-os/akmods
+#dnf5 copr disable ublue-os/akmods
 dnf5 copr disable bieszczaders/kernel-cachyos
 dnf5 copr disable bieszczaders/kernel-cachyos-addons
 dnf5 copr disable bieszczaders/kernel-cachyos-lto
