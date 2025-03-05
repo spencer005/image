@@ -37,6 +37,7 @@ install=(
 )
 
 remove=(
+    "dolphin"
     "firefox"
     "toolbox"
 )
