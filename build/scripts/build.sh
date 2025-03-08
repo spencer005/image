@@ -1,43 +1,50 @@
 #!/bin/bash
+# Main build script for image creation
+
+# Force script to exit on error, undefined variables, and pipe failures
 set -ouex pipefail
 
-echo "::group::setup and remove cliwrap"
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "${SCRIPT_DIR}/functions.sh"
-source "${SCRIPT_DIR}/config.sh"
+# Load supporting scripts
+script_dir="$(dirname "$(realpath "$0")")"
+source "${script_dir}/functions.sh"
+source "${script_dir}/config.sh"
+
+# 1. Setup environment
+section "Setting up build environment"
 remove_cliwrap
-echo "::endgroup::"
+section_end
 
-echo "::group::Enable COPRs"
+# 2. Package management
+section "Enabling COPR repositories"
 copr enable "${coprs[@]}"
-echo "::endgroup::"
+section_end
 
-echo "::group::DNF"
-rpm --erase --nodeps -- "${kernel[@]}"
+section "Installing and configuring packages"
+# Remove existing kernel packages
+rpm --erase --nodeps -- "${kernel_pkgs[@]}"
+
+# Install new packages
 dnf install --allowerasing "${install[@]}"
+
+# Swap specific packages
 dnf swap wpa_supplicant iwd
+
+# Remove unwanted packages
 dnf remove "${remove[@]}"
-echo "::endgroup::"
+section_end
 
-echo "::group::Disable COPRs"
+section "Cleaning up repositories"
 copr disable "${coprs[@]}"
-echo "::endgroup::"
-
-echo "::group::Clean DNF Cache"
 dnf clean all
-echo "::endgroup::"
+section_end
 
-echo "::group::Generate initramfs with dracut"
-KERNEL_VERSION=$(rpm -q kernel-cachyos-lto --qf "%{version}-%{release}.%{arch}\n" | head -n1)
+# 3. System configuration
+section "Generating initramfs with dracut"
+generate_initramfs "$kernel"
+section_end
 
-/usr/bin/dracut \
-    --no-hostonly \
-    --kver $KERNEL_VERSION \
-    --reproducible \
-    -v \
-    --add ostree \
-    -f "/lib/modules/$KERNEL_VERSION/initramfs.img"
+section "Configuring system services"
+enable_units "${units[@]}"
+section_end
 
-echo "::endgroup::"
-
-systemctl enable podman.socket
+echo "✅ Build completed successfully"
