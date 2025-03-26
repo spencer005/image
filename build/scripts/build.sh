@@ -19,6 +19,9 @@ section "Enabling COPR repositories"
 copr enable "${coprs[@]}"
 section_end
 
+dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
 section "Installing and configuring packages"
 # Remove existing kernel packages
 rpm --erase --nodeps -- "${kernel_pkgs[@]}"
