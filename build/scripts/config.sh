@@ -28,6 +28,7 @@ kernel_pkgs=(
 install=(
     # Desktop environment
     "@kde-desktop"
+    "mpd"
     
     # Terminal and shell
     "zsh"
