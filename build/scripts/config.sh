@@ -65,6 +65,10 @@ remove=(
     "konsole"
     "ark"
     "vim"
+
+    "vlc"
+    "vlc-plugins-base"
+    "vlc-plugins-freeworld"
 )
 
 # Enable systemd units
