@@ -5,8 +5,8 @@
 set -ouex pipefail
 
 # Silence gpg errors
-mkdir -p /root/.gnupg
-chmod 700 /root/.gnupg
+export GNUPGHOME=/tmp/gnupg
+install -d -m700 "$GNUPGHOME"
 
 # Load supporting scripts
 script_dir="$(dirname "$(realpath "$0")")"
