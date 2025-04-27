@@ -10,6 +10,7 @@ coprs=(
     "bieszczaders/kernel-cachyos-addons"
     "solopasha/plasma-unstable"
     "gmaglione/podman-bootc"
+    "alternateved/eza"
 )
 
 # Kernel configuration
@@ -29,29 +30,29 @@ install=(
     # Desktop environment
     "@kde-desktop"
     "mpd"
-    
+
     # Terminal and shell
     "zsh"
     "foot"
-    
+
     # CLI utilities
     "eza"
     "bat"
     "helix"
     "ripgrep"
     "fd-find"
-    
+
     # Development libraries
     "libcap-ng-devel"
     "procps-ng-devel"
-    
+
     # CachyOS packages
     "cachyos-ksm-settings"
     "scx-scheds"
     "cachyos-settings"
     "kernel-cachyos-lto"
     "kernel-cachyos-lto-devel-matched"
-    
+
     # Container tools
     "podman-bootc"
 )

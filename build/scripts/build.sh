@@ -4,6 +4,10 @@
 # Force script to exit on error, undefined variables, and pipe failures
 set -ouex pipefail
 
+# Silence gpg errors
+mkdir -p /root/.gnupg
+chmod 700 /root/.gnupg
+
 # Load supporting scripts
 script_dir="$(dirname "$(realpath "$0")")"
 source "${script_dir}/functions.sh"
