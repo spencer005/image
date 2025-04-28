@@ -1,0 +1,26 @@
+diff --git a/build/scripts/build.sh b/build/scripts/build.sh
+@@
+-rpm --erase --nodeps -- "${kernel_pkgs[@]}"
+-
+-dnf swap vlc-plugins-base vlc-plugins-freeworld --allowerasing
++# ❶ Remove old kernels
++rpm --erase --nodeps -- "${kernel_pkgs[@]}"
+ 
+ # Install new packages
+-dnf install --exclude=vlc-plugins-base* --allowerasing --setopt=install_weak_deps=False --setopt=group_package_types=mandatory,default  "${install[@]}"
++dnf install \
++    --allowerasing \
++    --exclude=vlc*,vlc-plugins-*,phonon-qt6-backend-vlc* \
++    --setopt=install_weak_deps=False \
++    --setopt=group_package_types=mandatory,default \
++    "${install[@]}"
+ 
+ # Swap specific packages
+ dnf swap wpa_supplicant iwd
+@@
+-dnf remove "${remove[@]}"
++# ❷ Ensure VLC backend is gone
++dnf swap phonon-qt6-backend-vlc phonon-qt6-backend-mpv --allowerasing || true
++
++# Remove unwanted packages
++dnf remove "${remove[@]}"

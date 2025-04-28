@@ -1,51 +1,82 @@
-#!/bin/bash
-# Main build script for image creation
+#!/usr/bin/env bash
+# Main build script for Universal-Blue image
+# =========================================
+set -o errexit -o nounset -o pipefail
+set -o xtrace
 
-# Force script to exit on error, undefined variables, and pipe failures
-set -ouex pipefail
-
-# Silence gpg errors
+# ── 0 · Silence gpg warnings ───────────────────────────────
 export GNUPGHOME=/tmp/gnupg
 install -d -m700 "$GNUPGHOME"
 
-# Load supporting scripts
+# ── 1 · Helpers & config ───────────────────────────────────
 script_dir="$(dirname "$(realpath "$0")")"
 source "${script_dir}/functions.sh"
 source "${script_dir}/config.sh"
 
-# 1. Setup environment
+# ── 2 · Prepare base env ───────────────────────────────────
 section "Setting up build environment"
 remove_cliwrap
 section_end
 
-# 2. Package management
+# ── 3 · Enable COPRs + RPM Fusion ──────────────────────────
 section "Enabling COPR repositories"
 copr enable "${coprs[@]}"
 section_end
 
-dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+dnf install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+dnf install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 
-section "Installing and configuring packages"
-# Remove existing kernel packages
+# ── 4 · Build & install Phonon-mpv (Qt 6) ──────────────────
+section "Building Phonon-mpv backend"
+
+build_deps=(
+  gcc cmake ninja-build extra-cmake-modules
+  mpv-devel qt6-qtbase-devel phonon-qt6-devel
+)
+
+dnf install \
+    --allowerasing \
+    --exclude=vlc*,vlc-plugins-*,phonon-qt6-backend-vlc* \
+    --setopt=install_weak_deps=False \
+    "${build_deps[@]}"
+
+git clone --depth 1 https://github.com/OpenProgger/phonon-mpv /tmp/phonon-mpv
+cmake -S /tmp/phonon-mpv -B /tmp/phonon-mpv/build -GNinja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DPHONON_BUILD_QT5=OFF \
+      -DPHONON_BUILD_QT6=ON
+cmake --build    /tmp/phonon-mpv/build
+cmake --install  /tmp/phonon-mpv/build
+
+dnf remove "${build_deps[@]}"
+rm -rf /tmp/phonon-mpv
+section_end
+
+# ── 5 · Kernel housekeeping ────────────────────────────────
 rpm --erase --nodeps -- "${kernel_pkgs[@]}"
 
-# Install new packages
-dnf install --allowerasing "${install[@]}"
+# ── 6 · Main package transaction ───────────────────────────
+section "Installing and configuring packages"
 
-# Swap specific packages
-dnf swap wpa_supplicant iwd
+dnf install \
+    --allowerasing \
+    --exclude=vlc*,vlc-plugins-*,phonon-qt6-backend-vlc* \
+    --setopt=install_weak_deps=False \
+    --setopt=group_package_types=mandatory,default \
+    "${install[@]}"
 
-# Remove unwanted packages
+dnf swap wpa_supplicant iwd --allowerasing
+dnf swap phonon-qt6-backend-vlc phonon-qt6-backend-mpv --allowerasing || true
 dnf remove "${remove[@]}"
 section_end
 
+# ── 7 · Disable COPRs & clean cache ────────────────────────
 section "Cleaning up repositories"
 copr disable "${coprs[@]}"
 dnf clean all
 section_end
 
-# 3. System configuration
+# ── 8 · System configuration ───────────────────────────────
 section "Generating initramfs with dracut"
 generate_initramfs "$kernel"
 section_end
